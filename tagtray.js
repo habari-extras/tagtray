@@ -1,24 +1,35 @@
 $(function(){
 	// Tag Drawer: Add tag via click
 	$('#tag-list li').click(function() {
+		
 		// here we set the current text of #tags to current for later examination
 		var current = $('#tags').val();
 		
 		// create a regex that finds the clicked tag in the input field
-		var replstr = new RegExp('\\s*"?' + $( this ).text() + '"?\\s*', "gi");
-	
+		// The regex requires before the tag: whitespace, a comma, " or the beginning of the line
+		// after the tag: whitespace, a comma, " or the end of the line
+		// This is necessary to not match "foobar" when "foo" is selected.
+		// Normal people would just use \b to set a word boundary but that would not work for tags with special chars
+		// We also put everything in subexpressions so we can get the tag without the rest later
+		var replstr = new RegExp('(^|[\\s,"])(' + $( this ).text() + ')([\\s,"]|$)', "gi");
+		var hits = replstr.exec(current);
+		
 		// check to see if the tag item we clicked has been clicked before...
-		if( $( this ).hasClass('clicked') ) {
-			// remove that tag from the input field
-			$( '#tags' ).val( current.replace(replstr, '') );
-			// unhighlight that tag
-			$(this).removeClass( 'clicked' );
+		if(hits != null) {
+			// remove that tag from the input field. To make sure we don't accidentally hit other tags,
+			// we do it by position and length. [2] is the position of the matched tag without the whitespace (see above)
+			var newtags = current.substr( 0, hits.index + hits[1].length ) + current.substr( hits.index + hits[0].length );
+			$( '#tags' ).val( newtags );
+			// unhighlight that tag if necessary
+			if( $( this ).hasClass('clicked') ) {
+				$(this).removeClass( 'clicked' );
+			}
 		}
 		else {
 			// if it hasn't been clicked, go ahead and add the clicked class
 			$(this).addClass( 'clicked' );
 			// be sure that the option wasn't already in the input field
-			if(!current.match(replstr) || $( '#tags.islabeled' ).size() > 0) {
+			if(hits == null) {
 				// check to see if current is the default text
 				if( $( '#tags').val().length == 0 ) {
 					// and if it is, replace it with whatever we clicked
@@ -62,3 +73,24 @@ $(function(){
 		$( '#tag-list li' ).removeClass( 'clicked' );
 	});
 });
+
+function resetTags() {
+	var current = $('#tags').val();
+
+	$('#tag-list li').each(function(){
+		// Use a regex to see if this exact tag is in the tag text field
+		// see above for a detailed description
+		replstr = new RegExp('(^|[\\s,"])' + $( this ).text() + '([\\s,"]|$)', "gi");
+		if (current.match(replstr)) {
+			$(this).addClass('clicked');
+		}
+		else {
+			$(this).removeClass('clicked');
+		}
+	});
+
+	if (current.length === 0 && !$('#tags').hasClass('focus')) {
+		$('label[for=tags]').addClass('overcontent').removeClass('abovecontent').show();
+	}
+
+}
