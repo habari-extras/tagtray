@@ -41,8 +41,11 @@ class TagTray extends Plugin
 	 **/
 	public function action_admin_header($theme)
 	{
-		Stack::add('admin_header_javascript', $this->get_url(true) . 'tagtray.js', 'tagtray', 'jquery');
-		Stack::add('admin_stylesheet', $this->get_url(true) . 'tagtray.css', 'tagtray');
+		if($theme->page == 'publish') {
+			Stack::add('admin_header_javascript', $this->get_url(true) . 'tagtray.js', 'tagtray', 'jquery');
+			Stack::add('admin_footer_javascript', 'resetTags();', 'tagtray', 'tagtray');
+			Stack::add('admin_stylesheet', $this->get_url(true) . 'tagtray.css', 'tagtray');
+		}
 	}
 
 }
