@@ -17,3 +17,7 @@
 #tags_list ul li.clicked {
        background: #000;
 }
+
+#tags_list ul li.appearance {
+		text-decoration: underline;
+}

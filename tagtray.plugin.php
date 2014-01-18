@@ -21,11 +21,17 @@ class TagTray extends Plugin
 		$tags_list->class = 'container';
 		$tags_list->append('static', 'tagsliststart', '<ul id="tag-list" class="span-19">');
 		$tags = Tags::vocabulary()->get_tree( 'term_display ASC' );
+		$tag_html = "";
 
 		foreach ($tags as $tag) {
-			$tags_list->append('tag', 'tag_'.$tag->term, $tag );
+			$tag_html .= "\n<li class=\" tag_" . $tag->term;
+			if(preg_match("/{$tag->term_display}/i", $post->content) || preg_match("/{$tag->term}/i", $post->content)) {
+				$tag_html .= ' appearance';
+			}
+			$tag_html .= '">' . $tag->term_display . "</li>\n";
 		}
-
+		
+		$tags_list_content = $tags_list->append('static', 'tagslistcontent', $tag_html);
 		$tags_list->append('static', 'tagslistend', '</ul>');
 	}
 
