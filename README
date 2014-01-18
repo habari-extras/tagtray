@@ -1,0 +1,6 @@
+CHANGELOG
+
+1.1
+Added: Underline tags that occur literally in the post's content so people can see easily which tags they might want to use. It's a surprisinbly low impact on performance and gives the plugin an actual use even for Habari 0.10.
+Added: Highlight already selected tags on page load.
+Fixed: Do not load Tag Tray JavaScript and CSS when not on the publish page.
